@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "COEN174FoodReviewApp"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1w0scr9zffg37"
+s3_prefix = "COEN174FoodReviewApp"
+region = "us-west-2"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []

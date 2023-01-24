@@ -1,0 +1,386 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  COEN174FoodReviewApp
+
+  Sample SAM Template for COEN174FoodReviewApp
+
+Globals:
+  Function:
+    Timeout: 180
+    MemorySize: 128
+    Tracing: Active
+  Api:
+    TracingEnabled: true
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+
+Resources:
+  putReviewFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: putReview/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64 
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref reviewDynamoDB
+      Events:
+        putReview:
+          Type: Api
+          Properties:
+            Path: /putReview
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
+  getReviewFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: getReview/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64 
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref reviewDynamoDB
+      Events:
+        getReview:
+          Type: Api
+          Properties:
+            Path: /getReview
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+        getReviewByUser:
+          Type: Api
+          Properties:
+            Path: /getReviewsByUser
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+        getReviewsByFood:
+          Type: Api
+          Properties:
+            Path: /getReviewsByFood
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
+  getTrendingFoodFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getTrendingFood/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref foodDynamoDB
+      Events:
+        getTrendingFood:
+          Type: Api
+          Properties:
+            Path: /getTrendingFood
+            Method: GET
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
+  getCurrentFoodFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getCurrentFood/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref foodDynamoDB
+      Events:
+        getCurrentFood:
+          Type: Api
+          Properties:
+            Path: /getCurrentFood
+            Method: GET
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
+  getFeaturedFoodFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getFeaturedFood/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref foodDynamoDB
+      Events:
+        getFeaturedFood:
+          Type: Api
+          Properties:
+            Path: /getFeaturedFood
+            Method: GET
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
+  getAllFoodFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getAllFood/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref foodDynamoDB
+      Events:
+        getAllFood:
+          Type: Api
+          Properties:
+            Path: /getAllFood
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
+  getFoodRecFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getFoodRec/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref foodDynamoDB
+      Events:
+        getFoodRec:
+          Type: Api
+          Properties:
+            Path: /getFoodRec
+            Method: GET
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
+  putFoodFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: putFood/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref foodDynamoDB
+      Events:
+        putFood:
+          Type: Api
+          Properties:
+            Path: /putFood
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
+  updateFoodFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: updateFood/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          ENV: prod 
+          DYNAMODB_TABLE: !Ref foodDynamoDB
+      Events:
+        updateFood:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt reviewDynamoDB.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+      Policies:
+      - AmazonDynamoDBFullAccess 
+
+  foodReviewApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+
+  reviewDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: reviewId
+          AttributeType: S
+        - AttributeName: userId 
+          AttributeType: S
+        - AttributeName: foodId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: reviewId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: userIdIndex
+          KeySchema:
+          - AttributeName: userId 
+            KeyType: HASH
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+          Projection:
+            NonKeyAttributes:
+            - rating
+            - title
+            - body
+            - dateCreated
+            ProjectionType: INCLUDE
+        - IndexName: foodIdIndex
+          KeySchema:
+          - AttributeName: foodId 
+            KeyType: HASH
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+          Projection:
+            NonKeyAttributes:
+            - rating
+            - title
+            - body
+            - dateCreated
+            ProjectionType: INCLUDE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  foodDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: foodId 
+          AttributeType: S
+        - AttributeName: featured
+          AttributeType: S
+        - AttributeName: trending
+          AttributeType: S
+        - AttributeName: current
+          AttributeType: S
+      KeySchema:
+        - AttributeName: foodId 
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: featuredIndex
+          KeySchema:
+          - AttributeName: featured
+            KeyType: HASH
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+          Projection:
+            NonKeyAttributes:
+            - dateCreated
+            - name
+            - rating
+            - totalReviews
+            - restaurants
+            - tags
+            ProjectionType: INCLUDE
+        - IndexName: trendingIndex 
+          KeySchema:
+          - AttributeName: trending
+            KeyType: HASH
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+          Projection:
+            NonKeyAttributes:
+            - dateCreated
+            - name
+            - rating
+            - totalReviews
+            - restaurants
+            - tags
+            ProjectionType: INCLUDE
+        - IndexName: currentIndex
+          KeySchema:
+          - AttributeName: current 
+            KeyType: HASH
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+          Projection:
+            NonKeyAttributes:
+            - dateCreated
+            - name
+            - rating
+            - totalReviews
+            - restaurants
+            - tags
+            ProjectionType: INCLUDE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Join:
+        - ''
+        - - ApplicationInsights-SAM-
+          - Ref: AWS::StackName
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Fn::Join:
+        - ''
+        - - ApplicationInsights-SAM-
+          - Ref: AWS::StackName
+      AutoConfigurationEnabled: 'true'
+    DependsOn: ApplicationResourceGroup
+
+Outputs:
+  foodReviewApi:
+    Description: API Gateway endpoint URL for Prod stage
+    Value: !Sub "https://${foodReviewApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
