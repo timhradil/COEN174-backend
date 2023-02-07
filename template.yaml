@@ -29,6 +29,7 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref reviewDynamoDB
       Events:
         putReview:
@@ -52,6 +53,7 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref reviewDynamoDB
       Events:
         getReview:
@@ -89,6 +91,7 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref foodDynamoDB
       Events:
         getTrendingFood:
@@ -112,6 +115,7 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref foodDynamoDB
       Events:
         getCurrentFood:
@@ -135,6 +139,7 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref foodDynamoDB
       Events:
         getFeaturedFood:
@@ -158,13 +163,14 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref foodDynamoDB
       Events:
         getAllFood:
           Type: Api
           Properties:
             Path: /getAllFood
-            Method: POST
+            Method: GET
             RestApiId:
               Ref: foodReviewApi
       Policies:
@@ -181,6 +187,7 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref foodDynamoDB
       Events:
         getFoodRec:
@@ -204,6 +211,7 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref foodDynamoDB
       Events:
         putFood:
@@ -227,6 +235,7 @@ Resources:
       Environment:
         Variables:
           ENV: prod 
+          ENDPOINT_URL: none
           DYNAMODB_TABLE: !Ref foodDynamoDB
       Events:
         updateFood:

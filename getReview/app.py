@@ -1,6 +1,7 @@
 import os
 import json
 import boto3
+from dynamodb_json import json_util as json_db
 
 # getReview
 def lambda_handler(event, context):
@@ -10,7 +11,7 @@ def lambda_handler(event, context):
 
     # Static Variables
     if os.environ['ENV'] == 'local':
-        db_client = boto3.client('dynamodb', endpoint_url='http://docker.for.mac.localhost:8000')
+        db_client = boto3.client('dynamodb', endpoint_url=os.environ['ENDPOINT_URL'])
     else:
         db_client = boto3.client('dynamodb')
     DYNAMODB_TABLE = os.environ['DYNAMODB_TABLE']
@@ -22,7 +23,7 @@ def lambda_handler(event, context):
         response = db_client.get_item(
             TableName=DYNAMODB_TABLE,
             Key={
-                'reviewId':{'S': reviewId},
+                'reviewId':{'S': body['reviewId']},
             },
         ) 
     elif 'userId' in body:
@@ -31,7 +32,7 @@ def lambda_handler(event, context):
             IndexName='userIdIndex',
             KeyConditionExpression='userId = :userId',
             ExpressionAttributeValues={
-                ':userId': {'S': userId},
+                ':userId': {'S': body['userId']},
             },
         ) 
     elif 'foodId' in body:
@@ -40,11 +41,14 @@ def lambda_handler(event, context):
             IndexName='foodIdIndex',
             KeyConditionExpression='foodId = :foodId',
             ExpressionAttributeValues={
-                ':foodId': {'S': foodId},
+                ':foodId': {'S': body['foodId']},
             },
         ) 
 
-    body = {"reviews": response['Items']}
+    if 'Item' in response:
+        body = {"reviews": [json_db.loads(response['Item'])]}
+    elif 'Items' in response:
+        body = {"reviews": json_db.loads(response['Items'])}
 
     return {
         "statusCode": 200,
@@ -53,5 +57,5 @@ def lambda_handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
-        "body": json.dumps(body);
+        "body": json.dumps(body),
     }

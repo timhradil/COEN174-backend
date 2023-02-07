@@ -1,15 +1,17 @@
 import json
 import os
 import boto3
+from dynamodb_json import json_util as json_db
 
 #getAllFood
 def lambda_handler(event, context):
-    print('received event:')
+    print('received event: ')
     print(event)
 
     # Static Variables
     if os.environ['ENV'] == 'local':
-        db_client = boto3.client('dynamodb', endpoint_url='http://docker.for.mac.localhost:8000')
+        print(os.environ)
+        db_client = boto3.client('dynamodb', endpoint_url=os.environ['ENDPOINT_URL'])
     else:
         db_client = boto3.client('dynamodb')
     DYNAMODB_TABLE = os.environ['DYNAMODB_TABLE']
@@ -18,7 +20,7 @@ def lambda_handler(event, context):
     response = db_client.scan(
         TableName=DYNAMODB_TABLE,
     )
-    body = {"foods": response['Items']}
+    body = {"foods": json_db.loads(response['Items'])}
 
     return {
         "statusCode": 200,

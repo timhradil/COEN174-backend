@@ -11,7 +11,8 @@ def lambda_handler(event, context):
 
     # Static Variables
     if os.environ['ENV'] == 'local':
-        db_client = boto3.client('dynamodb', endpoint_url='http://docker.for.mac.localhost:8000')
+        print(os.environ)
+        db_client = boto3.client('dynamodb', endpoint_url=os.environ['ENDPOINT_URL'])
     else:
         db_client = boto3.client('dynamodb')
     DYNAMODB_TABLE = os.environ['DYNAMODB_TABLE']
@@ -20,7 +21,7 @@ def lambda_handler(event, context):
     body = json.loads(event['body'])
 
     # Create item object
-    if hasattr(body, 'foodId'):
+    if 'foodId' in body:
         foodId = body['foodId']
         response = db_client.get_item(
             TableName=DYNAMODB_TABLE,
@@ -28,9 +29,12 @@ def lambda_handler(event, context):
                 'foodId':{'S': foodId}
             },
         )
-        item = response['item']
+        item = response['Item']
     else:
-        foodId = str(uuid.uuid4())
+        if os.environ['ENV'] == 'local':
+            foodId = "0"
+        else:
+            foodId = str(uuid.uuid4())
         dateCreated = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
         item = {
             'foodId':{'S': foodId},

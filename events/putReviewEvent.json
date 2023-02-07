@@ -1,8 +1,8 @@
 {
-  "body": "{}",
+  "body": "{\"userId\":\"0\", \"foodId\":\"0\", \"rating\": 5}",
   "resource": "/{proxy+}",
   "path": "/path/to/resource",
-  "httpMethod": "GET",
+  "httpMethod": "POST",
   "isBase64Encoded": false,
   "queryStringParameters": {
     "foo": "bar"
