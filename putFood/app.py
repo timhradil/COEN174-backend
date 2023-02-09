@@ -53,9 +53,11 @@ def lambda_handler(event, context):
     if 'name' in body:
         item['name'] = {'S': body['name']}
     if 'restaurants' in body:
-        item['restaurants'] = {'L': body['restaurants']}
+        restaurants = [{'S' : restaurant} for restaurant in body['restaurants']]
+        item['restaurants'] = {'L': restaurants}
     if 'tags' in body:
-        item['tags'] = {'L': body['tags']}
+        tags = [{'S' : tag} for tag in body['tags']]
+        item['tags'] = {'L': tags}
 
     # Put object in DB
     response = db_client.put_item(

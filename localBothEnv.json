@@ -1,0 +1,3 @@
+{
+    "Parameters": {"ENV":"local","ENDPOINT_URL":"http://docker.for.mac.localhost:8000","DYNAMODB_FOOD_TABLE":"foodDynamoDB","DYNAMODB_REVIEW_TABLE":"reviewDynamoDB"}
+}

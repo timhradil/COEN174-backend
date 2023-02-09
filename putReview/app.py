@@ -45,6 +45,8 @@ def lambda_handler(event, context):
             'dateCreated':{'S': dateCreated},
         }
 
+    if 'rating' in body:
+        item['rating'] = {'N': str(body['rating'])}
     if 'title' in body:
         item['title'] = {'S': body['title']}
     if 'body' in body:

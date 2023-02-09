@@ -39,6 +39,20 @@ Resources:
             Method: POST
             RestApiId:
               Ref: foodReviewApi
+        createReview:
+          Type: Api
+          Properties:
+            Path: /createReview
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+        updateReview:
+          Type: Api
+          Properties:
+            Path: /updateReview
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
       Policies:
       - AmazonDynamoDBFullAccess
 
@@ -152,10 +166,10 @@ Resources:
       Policies:
       - AmazonDynamoDBFullAccess
 
-  getAllFoodFunction:
+  getFoodFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: getAllFood/
+      CodeUri: getFood/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
@@ -171,6 +185,13 @@ Resources:
           Properties:
             Path: /getAllFood
             Method: GET
+            RestApiId:
+              Ref: foodReviewApi
+        getFood:
+          Type: Api
+          Properties:
+            Path: /getFood
+            Method: POST
             RestApiId:
               Ref: foodReviewApi
       Policies:
@@ -221,13 +242,27 @@ Resources:
             Method: POST
             RestApiId:
               Ref: foodReviewApi
+        createFood:
+          Type: Api
+          Properties:
+            Path: /createFood
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+        updateFood:
+          Type: Api
+          Properties:
+            Path: /updateFood
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
       Policies:
       - AmazonDynamoDBFullAccess
 
-  updateFoodFunction:
+  updateFoodReviewsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: updateFood/
+      CodeUri: updateFoodReviews/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
@@ -244,6 +279,29 @@ Resources:
             Stream: !GetAtt reviewDynamoDB.StreamArn
             StartingPosition: LATEST
             BatchSize: 1
+      Policies:
+      - AmazonDynamoDBFullAccess 
+
+  updateTrendingFoodFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: updateTrendingFood/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          ENV: prod 
+          ENDPOINT_URL: none
+          DYNAMODB_FOOD_TABLE: !Ref foodDynamoDB
+          DYNAMODB_REVIEW_TABLE: !Ref reviewDynamoDB
+      Events:
+        updateTrendingFood:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 * * * ? *)
+            Enabled: True
       Policies:
       - AmazonDynamoDBFullAccess 
 
@@ -298,7 +356,7 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
       StreamSpecification:
-        StreamViewType: NEW_IMAGE
+        StreamViewType: NEW_AND_OLD_IMAGES
 
   foodDynamoDB:
     Type: AWS::DynamoDB::Table
@@ -367,27 +425,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
-
-  ApplicationResourceGroup:
-    Type: AWS::ResourceGroups::Group
-    Properties:
-      Name:
-        Fn::Join:
-        - ''
-        - - ApplicationInsights-SAM-
-          - Ref: AWS::StackName
-      ResourceQuery:
-        Type: CLOUDFORMATION_STACK_1_0
-  ApplicationInsightsMonitoring:
-    Type: AWS::ApplicationInsights::Application
-    Properties:
-      ResourceGroupName:
-        Fn::Join:
-        - ''
-        - - ApplicationInsights-SAM-
-          - Ref: AWS::StackName
-      AutoConfigurationEnabled: 'true'
-    DependsOn: ApplicationResourceGroup
 
 Outputs:
   foodReviewApi:

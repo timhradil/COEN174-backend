@@ -17,10 +17,19 @@ def lambda_handler(event, context):
     DYNAMODB_TABLE = os.environ['DYNAMODB_TABLE']
 
     body = {}
-    response = db_client.scan(
-        TableName=DYNAMODB_TABLE,
-    )
-    body = {"foods": json_db.loads(response['Items'])}
+    if 'foodId' in event['body']:
+        response = db_client.get_item(
+            TableName=DYNAMODB_TABLE,
+            Key={
+                'foodId':{'S': body['foodId']},
+            },
+        ) 
+        body = {"food": json_db.loads(response['Item'])}
+    else:        
+        response = db_client.scan(
+            TableName=DYNAMODB_TABLE,
+        )
+        body = {"foods": json_db.loads(response['Items'])}
 
     return {
         "statusCode": 200,

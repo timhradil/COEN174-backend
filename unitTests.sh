@@ -117,7 +117,11 @@ sam local invoke putFoodFunction -e events/putFoodEvent.json -n localFoodEnv.jso
 checkError
 
 echo " getAllFoods"
-sam local invoke getAllFoodFunction -e events/getAllFoodEvent.json -n localFoodEnv.json >$VERBOSEFILE 2>$DEBUGFILE
+sam local invoke getFoodFunction -e events/getAllFoodEvent.json -n localFoodEnv.json >$VERBOSEFILE 2>$DEBUGFILE
+checkError
+
+echo " getFood"
+sam local invoke getFoodFunction -e events/getFoodEvent.json -n localFoodEnv.json >$VERBOSEFILE 2>$DEBUGFILE
 checkError
 
 echo " putReview"
@@ -134,6 +138,14 @@ checkError
 
 echo " getReviewsByFood"
 sam local invoke getReviewFunction -e events/getReviewsByFoodEvent.json -n localReviewEnv.json --docker-network lambda-local >$VERBOSEFILE 2>$DEBUGFILE
+checkError
+
+echo " updateTrendingReviews"
+sam local invoke updateTrendingReviews -e updateTrendingFoodEvent.json -n localBothEnv.json --docker-network lambda-local >$VERBOSEFILE 2>$DEBUGFILE
+checkError
+
+echo " updateFoodReviews"
+sam local invoke updateFoodReviews -e updateFoodReviewsEvent.json -n localFoodEnv.json --docker-network lambda-local >$VERBOSEFILE 2>$DEBUGFILE
 checkError
 
 if $ALLPASSED; then
