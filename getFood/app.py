@@ -17,7 +17,8 @@ def lambda_handler(event, context):
     DYNAMODB_TABLE = os.environ['DYNAMODB_TABLE']
 
     body = {}
-    if 'foodId' in event['body']:
+    if event['body']:
+        body = json.loads(event['body'])
         response = db_client.get_item(
             TableName=DYNAMODB_TABLE,
             Key={

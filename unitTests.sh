@@ -64,13 +64,13 @@ aws dynamodb create-table \
            {
                \"IndexName\":\"userIdIndex\",
                \"KeySchema\":[{\"AttributeName\":\"userId\",\"KeyType\":\"HASH\"}],
-               \"Projection\":{\"ProjectionType\":\"INCLUDE\",\"NonKeyAttributes\":[\"rating\",\"title\",\"body\",\"dateCreated\"]},
+               \"Projection\":{\"ProjectionType\":\"INCLUDE\",\"NonKeyAttributes\":[\"foodId\",\"rating\",\"title\",\"body\",\"dateCreated\",\"dateUpdated\"]},
                \"ProvisionedThroughput\":{\"ReadCapacityUnits\":5,\"WriteCapacityUnits\":5}
            },
            {
                \"IndexName\":\"foodIdIndex\",
                \"KeySchema\":[{\"AttributeName\":\"foodId\",\"KeyType\":\"HASH\"}],
-               \"Projection\":{\"ProjectionType\":\"INCLUDE\",\"NonKeyAttributes\":[\"rating\",\"title\",\"body\",\"dateCreated\"]},
+               \"Projection\":{\"ProjectionType\":\"INCLUDE\",\"NonKeyAttributes\":[\"userId\",\"rating\",\"title\",\"body\",\"dateCreated\",\"dateUpdated\"]},
                \"ProvisionedThroughput\":{\"ReadCapacityUnits\":5,\"WriteCapacityUnits\":5}
            }
       ]" \
@@ -146,6 +146,14 @@ checkError
 
 echo " updateFoodReviews"
 sam local invoke updateFoodReviews -e updateFoodReviewsEvent.json -n localFoodEnv.json --docker-network lambda-local >$VERBOSEFILE 2>$DEBUGFILE
+checkError
+
+echo " removeFood"
+sam local invoke removeFoodFunction -e events/removeFoodEvent.json -n localFoodEnv.json >$VERBOSEFILE 2>$DEBUGFILE
+checkError
+
+echo " removeReview"
+sam local invoke removeReviewFunction -e events/removeReviewEvent.json -n localReviewEnv.json --docker-network lambda-local >$VERBOSEFILE 2>$DEBUGFILE
 checkError
 
 if $ALLPASSED; then

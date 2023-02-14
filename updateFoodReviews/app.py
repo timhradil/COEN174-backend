@@ -40,7 +40,10 @@ def lambda_handler(event, context):
       totalReviews = float(food['totalReviews']['N']) - 1
       reviewRating = float(review['rating']['N'])
       foodRating = float(food['rating']['N'])
-      foodRating = (foodRating * (totalReviews + 1) - reviewRating) / totalReviews
+      if totalReviews > 0:
+         foodRating = (foodRating * (totalReviews + 1) - reviewRating) / totalReviews
+      else:
+         foodRating = 0
    
    elif eventName == 'MODIFY':
       new_review = record['dynamodb']['NewImage']

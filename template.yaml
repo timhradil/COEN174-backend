@@ -94,6 +94,30 @@ Resources:
       Policies:
       - AmazonDynamoDBFullAccess
 
+  removeReviewFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: removeReview/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64 
+      Environment:
+        Variables:
+          ENV: prod 
+          ENDPOINT_URL: none
+          DYNAMODB_TABLE: !Ref reviewDynamoDB
+      Events:
+        removeReview:
+          Type: Api
+          Properties:
+            Path: /removeReview
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
   getTrendingFoodFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -259,6 +283,30 @@ Resources:
       Policies:
       - AmazonDynamoDBFullAccess
 
+  removeFoodFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: removeFood/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - arm64 
+      Environment:
+        Variables:
+          ENV: prod 
+          ENDPOINT_URL: none
+          DYNAMODB_TABLE: !Ref foodDynamoDB
+      Events:
+        removeFood:
+          Type: Api
+          Properties:
+            Path: /removeFood
+            Method: POST
+            RestApiId:
+              Ref: foodReviewApi
+      Policies:
+      - AmazonDynamoDBFullAccess
+
   updateFoodReviewsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -333,10 +381,12 @@ Resources:
             WriteCapacityUnits: 5
           Projection:
             NonKeyAttributes:
+            - foodId
             - rating
             - title
             - body
             - dateCreated
+            - dateUpdated
             ProjectionType: INCLUDE
         - IndexName: foodIdIndex
           KeySchema:
@@ -347,10 +397,12 @@ Resources:
             WriteCapacityUnits: 5
           Projection:
             NonKeyAttributes:
+            - userId
             - rating
             - title
             - body
             - dateCreated
+            - dateUpdated
             ProjectionType: INCLUDE
       ProvisionedThroughput:
         ReadCapacityUnits: 5

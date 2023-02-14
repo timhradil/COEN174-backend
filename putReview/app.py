@@ -28,6 +28,8 @@ def lambda_handler(event, context):
             },
         )
         item = response['Item']
+        dateUpdated = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+        item['dateUpdated'] = {'S': dateUpdated}
     else:
         if os.environ['ENV'] == 'local':
             reviewId = "0"
