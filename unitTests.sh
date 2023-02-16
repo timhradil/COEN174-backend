@@ -148,6 +148,10 @@ echo " updateFoodReviews"
 sam local invoke updateFoodReviews -e updateFoodReviewsEvent.json -n localFoodEnv.json --docker-network lambda-local >$VERBOSEFILE 2>$DEBUGFILE
 checkError
 
+echo " getFoodRec"
+sam local invoke getFoodRec -e events/getFoodRecEvent.json -n localFoodEnv.json --docker-network lambda-local >$VERBOSEFILE 2>$DEBUGFILE
+checkError
+
 echo " removeFood"
 sam local invoke removeFoodFunction -e events/removeFoodEvent.json -n localFoodEnv.json >$VERBOSEFILE 2>$DEBUGFILE
 checkError

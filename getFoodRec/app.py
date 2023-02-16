@@ -1,4 +1,6 @@
 import json
+import os
+import boto3
 from dynamodb_json import json_util as json_db
 
 #getFoodRec
@@ -18,7 +20,7 @@ def lambda_handler(event, context):
         IndexName='trendingIndex',
         KeyConditionExpression='trending = :trending',
         ExpressionAttributeValues={
-            ':trending': {'BOOL': True},
+            ':trending': {'S': 'T'},
         },
     )
     body = {"food": json_db.loads(response['Items'][0])}
